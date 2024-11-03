@@ -22,6 +22,14 @@ class MyDataset:
         label = np.loadtxt(f2, delimiter=',')
         # label = label.reshape((10, 250, 6))[:, :, [0, 3, 1, 4]]
         self.label = label.reshape((10, 250, 6))[:, :, [0, 3]]
+        f1_ = open('./Xm_test_2.txt')
+        data_ = np.loadtxt(f1_, delimiter=',')
+        # data_ = data.reshape((10, 10, 20, 250, 4)).transpose(0, 1, 3, 2, 4)
+        self.data_ = data_.reshape((10, 10, 20, 250, 4))[:, :, :, :, :2].transpose(0, 1, 3, 2, 4)
+        f2_ = open('./X_test.txt')
+        label_ = np.loadtxt(f2_, delimiter=',')
+        # label_ = label_.reshape((10, 250, 6))[:, :, [0, 3, 1, 4]]
+        self.label_ = label_.reshape((10, 250, 6))[:, :, [0, 3]]
         self.c = 2
 
     def train_set(self):
@@ -49,20 +57,20 @@ class MyDataset:
     def test_set(self):
         test_data = []
         test_label = []
-        n = 6
-        n_ = 1
+        n = 4
+        n_ = 3
         test_factor_set = np.ones((n_, 230, 2))
         for i in range(n, n + n_):
             for j in range(0, 1):
                 for k in range(230):
-                    x_t = copy.deepcopy(self.data[i, j, k:k + 10])
+                    x_t = copy.deepcopy(self.data_[i, j, k:k + 10])
                     # factor = np.array([x_t[0, :, 0], x_t[0, :, 1]]).transpose((1, 0))
                     factor = np.array([x_t[0, 0, 0], x_t[0, 0, 1]])
                     # factor = np.array([0, 0])
                     test_factor_set[i-n, k] = factor
                     x_t =  (x_t - factor).transpose(2, 0, 1)   # (10,20,2)
-                    # y_t = copy.deepcopy(self.label[i, k + 10])
-                    y_t = copy.deepcopy(self.label[i, k + 9])
+                    # y_t = copy.deepcopy(self.label_[i, k + 10])
+                    y_t = copy.deepcopy(self.label_[i, k + 9])
                     y_t = y_t - factor
                     # y_t = np.repeat(y_t, 20, axis=0).reshape((self.c, 20))
                     test_data.append(((x_t / 85).tolist()))
